@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>B'day Gift ❤️</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Short+Stack&family=Homemade+Apple&display=swap">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Zeyada&display=swap');
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: 1000px;
+      background-image: url("https://www.psdgraphics.com/wp-content/uploads/2022/01/white-math-paper-texture.jpg");
+      background-position: center center;
+      overflow: hidden;
+    }
+
+    /* MUSIC BUTTON */
+    #musicBtn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 9999;
+      background: rgba(255,255,255,0.75);
+      border: none;
+      border-radius: 25px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-family: 'Short Stack', cursive;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: 0.2s ease;
+    }
+
+    #musicBtn:hover {
+      transform: scale(1.05);
+    }
+
+    .paper {
+      background-image: url("https://i0.wp.com/textures.world/wp-content/uploads/2018/10/2-Millimeter-Paper-Background-copy.jpg?ssl=1");
+      background-size: 500px;
+      background-position: center center;
+      padding: 20px 100px;
+      transform: rotateZ(-5deg);
+      box-shadow: 1px 15px 20px rgba(0,0,0,0.5);
+      position: absolute;
+    }
+
+    .paper.heart {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .paper.heart::after {
+      content: "";
+      background-image: url('https://cdn.pixabay.com/photo/2016/03/31/19/25/cartoon-1294994__340.png');
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background-size: 150px;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.6;
+    }
+
+    .paper.image {
+      padding: 10px;
+    }
+
+    img {
+      max-height: 200px;
+      width: 100%;
+      user-select: none;
+    }
+
+    p {
+      font-family: 'Zeyada';
+      font-size: 50px;
+      color: rgb(0,0,100);
+      opacity: 0.75;
+      user-select: none;
+      filter: drop-shadow(2px 1.5px 1px rgba(0,0,105,0.9));
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- MUSIC BUTTON -->
+  <button id="musicBtn" onclick="toggleMusic()">▶ Music</button>
+
+  <!-- AUDIO -->
+  <audio id="bgMusic" loop>
+    <source src="./music/song.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- PAPERS -->
+  <div class="paper heart"></div>
+
+  <div class="paper image">
+    <p>and I've fallen in</p>
+    <p>Love with You 😍</p>
+    <img src="./images/1.jpeg">
+  </div>
+
+  <div class="paper image">
+    <p>Kitni Khubsurat Ho<br>Yrrrr</p>
+    <img src="./images/17.jpeg">
+  </div>
+
+  <div class="paper image">
+    <p>Dekhke Hi Pyaar Karne<br>Ka Mann Karra</p>
+    <img src="./images/4.jpeg">
+  </div>
+
+  <div class="paper image">
+    <p>I Love You ❤️<br>Sooooo Much ❤️</p>
+    <img src="./images/8.jpeg">
+  </div>
+
+  <div class="paper image">
+    <p>How can be<br>someone so cute ❤️</p>
+    <img src="./images/12.jpeg">
+  </div>
+
+  <div class="paper">
+    <p>You are Cute</p>
+    <p>Amazing ❤️</p>
+  </div>
+
+  <div class="paper">
+    <p>Drag the papers to move!</p>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    /* MUSIC */
+    const music = document.getElementById('bgMusic');
+    music.volume = 0.4;
+    let isPlaying = false;
+
+    function toggleMusic() {
+      const btn = document.getElementById('musicBtn');
+      if (!isPlaying) {
+        music.play();
+        btn.innerText = '⏸ Music';
+      } else {
+        music.pause();
+        btn.innerText = '▶ Music';
+      }
+      isPlaying = !isPlaying;
+    }
+
+    /* DRAG PAPERS */
+    let highestZ = 1;
+
+    class Paper {
+      holdingPaper = false;
+      mouseX = 0;
+      mouseY = 0;
+      prevMouseX = 0;
+      prevMouseY = 0;
+      velX = 0;
+      velY = 0;
+      rotation = Math.random() * 30 - 15;
+      currentPaperX = 0;
+      currentPaperY = 0;
+
+      init(paper) {
+        document.addEventListener('mousemove', (e) => {
+          this.mouseX = e.clientX;
+          this.mouseY = e.clientY;
+          this.velX = this.mouseX - this.prevMouseX;
+          this.velY = this.mouseY - this.prevMouseY;
+
+          if (this.holdingPaper) {
+            this.currentPaperX += this.velX;
+            this.currentPaperY += this.velY;
+            paper.style.transform =
+              `translate(${this.currentPaperX}px, ${this.currentPaperY}px) rotate(${this.rotation}deg)`;
+          }
+
+          this.prevMouseX = this.mouseX;
+          this.prevMouseY = this.mouseY;
+        });
+
+        paper.addEventListener('mousedown', () => {
+          this.holdingPaper = true;
+          paper.style.zIndex = highestZ++;
+        });
+
+        window.addEventListener('mouseup', () => {
+          this.holdingPaper = false;
+        });
+      }
+    }
+
+    document.querySelectorAll('.paper').forEach(paper => {
+      const p = new Paper();
+      p.init(paper);
+    });
+  </script>
+
+</body>
+</html>
