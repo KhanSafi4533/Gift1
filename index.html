@@ -140,76 +140,84 @@
   </div>
 
   <!-- SCRIPT -->
-  <script>
-    /* MUSIC */
-    const music = document.getElementById('bgMusic');
-    music.volume = 0.4;
-    let isPlaying = false;
+<script>
+  const music = document.getElementById('bgMusic');
+  const btn = document.getElementById('musicBtn');
 
-    function toggleMusic() {
-      const btn = document.getElementById('musicBtn');
-      if (!isPlaying) {
-        music.play();
-        btn.innerText = '⏸ Music';
-      } else {
-        music.pause();
-        btn.innerText = '▶ Music';
-      }
-      isPlaying = !isPlaying;
+  music.volume = 0.4;
+  let isPlaying = false;
+
+  function toggleMusic() {
+    if (!isPlaying) {
+      music.load(); // 👈 important
+      music.play()
+        .then(() => {
+          isPlaying = true;
+          btn.innerText = '⏸ Music';
+        })
+        .catch(err => {
+          console.log("Playback blocked:", err);
+        });
+    } else {
+      music.pause();
+      isPlaying = false;
+      btn.innerText = '▶ Music';
     }
+  }
 
-    /* DRAG PAPERS */
-    let highestZ = 1;
+  /* DRAG PAPERS */
+  let highestZ = 1;
 
-    class Paper {
-      holdingPaper = false;
-      mouseX = 0;
-      mouseY = 0;
-      prevMouseX = 0;
-      prevMouseY = 0;
-      velX = 0;
-      velY = 0;
-      rotation = Math.random() * 30 - 15;
-      currentPaperX = 0;
-      currentPaperY = 0;
+  class Paper {
+    holdingPaper = false;
+    mouseX = 0;
+    mouseY = 0;
+    prevMouseX = 0;
+    prevMouseY = 0;
+    rotation = Math.random() * 30 - 15;
+    currentPaperX = 0;
+    currentPaperY = 0;
 
-      init(paper) {
-        document.addEventListener('mousemove', (e) => {
-          this.mouseX = e.clientX;
-          this.mouseY = e.clientY;
-          this.velX = this.mouseX - this.prevMouseX;
-          this.velY = this.mouseY - this.prevMouseY;
+    init(paper) {
+      document.addEventListener('mousemove', (e) => {
+        if (!this.holdingPaper) return;
 
-          if (this.holdingPaper) {
-            this.currentPaperX += this.velX;
-            this.currentPaperY += this.velY;
-            paper.style.transform =
-              `translate(${this.currentPaperX}px, ${this.currentPaperY}px) rotate(${this.rotation}deg)`;
-          }
+        const dx = e.clientX - this.prevMouseX;
+        const dy = e.clientY - this.prevMouseY;
 
-          this.prevMouseX = this.mouseX;
-          this.prevMouseY = this.mouseY;
-        });
+        this.currentPaperX += dx;
+        this.currentPaperY += dy;
 
-        paper.addEventListener('mousedown', () => {
-          this.holdingPaper = true;
-          paper.style.zIndex = highestZ++;
-        });
+        paper.style.transform =
+          `translate(${this.currentPaperX}px, ${this.currentPaperY}px) rotate(${this.rotation}deg)`;
 
-        window.addEventListener('mouseup', () => {
-          this.holdingPaper = false;
-        });
-      }
+        this.prevMouseX = e.clientX;
+        this.prevMouseY = e.clientY;
+      });
+
+      paper.addEventListener('mousedown', (e) => {
+        this.holdingPaper = true;
+        this.prevMouseX = e.clientX;
+        this.prevMouseY = e.clientY;
+        paper.style.zIndex = highestZ++;
+      });
+
+      window.addEventListener('mouseup', () => {
+        this.holdingPaper = false;
+      });
     }
+  }
 
-    document.querySelectorAll('.paper').forEach(paper => {
-      const p = new Paper();
-      p.init(paper);
-    });
-  </script>
+  document.querySelectorAll('.paper').forEach(paper => {
+    const p = new Paper();
+    p.init(paper);
+  });
+</script>
+
 
 </body>
 </html>
+
 
 
 
